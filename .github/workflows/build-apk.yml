@@ -27,11 +27,6 @@ jobs:
           gradle wrapper
         fi
 
-    - name: Download libopus.so
-      run: |
-        mkdir -p app/libs/arm64-v8a
-        curl -L -o app/libs/arm64-v8a/libopus.so https://github.com/ironsmile/libopus-android-prebuilt/raw/master/arm64-v8a/libopus.so
-
     - name: Build with Gradle
       run: ./gradlew assembleDebug
       

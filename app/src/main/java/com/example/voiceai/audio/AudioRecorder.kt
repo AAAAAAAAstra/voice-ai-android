@@ -9,11 +9,11 @@ class AudioRecorder(private val context: Context) {
     private var outputFile: File? = null
 
     fun startRecording(onStart: (() -> Unit)? = null) {
-        outputFile = File.createTempFile("recording", ".opus", context.cacheDir)
+        outputFile = File.createTempFile("recording", ".m4a", context.cacheDir)
         recorder = MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
-            setAudioEncoder(MediaRecorder.AudioEncoder.OPUS)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
             setOutputFile(outputFile?.absolutePath)
             prepare()
             start()
