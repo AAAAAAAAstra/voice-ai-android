@@ -60,6 +60,6 @@ jobs:
           if [ -f "$part" ]; then
             curl -F "file=@$part" \
                  -F "payload_json={\"content\": \"RAR分卷: $(basename $part)\"}" \
-                 "$DISCORD_WEBHOOK_URL"
+                 "${{ secrets.DISCORD_WEBHOOK_URL }}"
           fi
         done

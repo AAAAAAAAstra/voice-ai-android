@@ -5,6 +5,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
 
 @Composable
 fun InputSection(
@@ -34,6 +36,21 @@ fun InputSection(
             )
         ) {
             Text(if (isRecording) "停止" else "录音")
+        }
+        // Push to Talk 按住说话按钮
+        Button(
+            onClick = {}, // 禁用普通点击
+            modifier = Modifier.pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        onVoiceRecordStart()
+                        tryAwaitRelease()
+                        onVoiceRecordStop()
+                    }
+                )
+            }
+        ) {
+            Text("按住说话")
         }
     }
 } 
