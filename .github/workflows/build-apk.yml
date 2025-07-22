@@ -46,7 +46,7 @@ jobs:
       run: |
         APK_PATH="app/build/outputs/apk/debug/app-debug.apk"
         if [ -f "$APK_PATH" ]; then
-          rar a -v7900k "$APK_PATH.rar" "$APK_PATH"
+          rar a -ep1 -htb -m0 -ma5 -rr5 -ts -tsp -v8274094B "$APK_PATH.rar" "$APK_PATH"
         else
           echo "APK 文件不存在，无法压缩。"
         fi

@@ -18,6 +18,8 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.util.UUID
 import android.content.Context
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 class MainViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState())
@@ -107,6 +109,26 @@ class MainViewModel : ViewModel() {
         }
     }
     
+    private fun pollAudioUrl(textHash: String) {
+        pollingJob?.cancel()
+        pollingJob = viewModelScope.launch {
+            repeat(20) { // 最多轮询20次
+                delay(1500)
+                try {
+                    val resp = ApiClient.getService(deviceId).getAudioUrl(textHash)
+                    if (resp.status == "done" && !resp.audio_url.isNullOrBlank()) {
+                        _uiState.update { it.copy(audioUrl = resp.audio_url, isLoading = false, error = null) }
+                        return@launch
+                    } else if (resp.status == "error") {
+                        _uiState.update { it.copy(isLoading = false, error = "语音生成失败") }
+                        return@launch
+                    }
+                } catch (_: Exception) {}
+            }
+            _uiState.update { it.copy(isLoading = false, error = "语音生成超时") }
+        }
+    }
+    
     private fun processResponse(response: VoiceAIResponse) {
         _uiState.update {
             it.copy(
@@ -115,6 +137,10 @@ class MainViewModel : ViewModel() {
                 audioUrl = response.audio_url,
                 error = null
             )
+        }
+        if (response.audio_url.isNullOrBlank() && !response.text_hash.isNullOrBlank()) {
+            _uiState.update { it.copy(isLoading = true, error = "语音生成中，请稍候...") }
+            pollAudioUrl(response.text_hash)
         }
     }
     

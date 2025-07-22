@@ -21,6 +21,11 @@ interface VoiceAIService {
         @Body request: TextRequest,
         @Header("X-Session-ID") deviceId: String
     ): VoiceAIResponse
+
+    @GET("get_audio_url")
+    suspend fun getAudioUrl(
+        @Query("text_hash") textHash: String
+    ): AudioUrlResponse
 }
 
 data class TextRequest(val text: String)
@@ -28,7 +33,13 @@ data class VoiceAIResponse(
     val user_text: String?,
     val ai_text: String,
     val audio_url: String?,
-    val timings: Map<String, Double>?
+    val timings: Map<String, Double>?,
+    val text_hash: String?
+)
+
+data class AudioUrlResponse(
+    val status: String,
+    val audio_url: String?
 )
 
 object ApiClient {
