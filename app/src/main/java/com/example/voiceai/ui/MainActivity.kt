@@ -53,6 +53,7 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     var serverUrl by remember { mutableStateOf("") }
+    val modelPath = "路径/到/ggml-base.en.bin" // TODO: 替换为实际模型路径
 
     Column(modifier = Modifier.padding(16.dp)) {
         // 新增服务器URL输入框
@@ -70,7 +71,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         InputSection(
             onTextSubmit = { text -> viewModel.sendText(text) },
             onVoiceRecordStart = { viewModel.startRecording() },
-            onVoiceRecordStop = { viewModel.stopRecording() },
+            onVoiceRecordStop = { viewModel.stopRecording(modelPath) },
             isRecording = uiState.isRecording
         )
         

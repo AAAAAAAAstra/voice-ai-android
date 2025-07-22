@@ -55,13 +55,16 @@ class MainViewModel : ViewModel() {
         }
     }
     
-    fun stopRecording() {
+    fun stopRecording(modelPath: String) {
         _uiState.update { it.copy(isRecording = false, isLoading = true) }
-        
         viewModelScope.launch {
             try {
-                val audioFile = audioRecorder.stopRecording() ?: return@launch
-                uploadAudio(audioFile)
+                val text = audioRecorder.stopRecordingAndTranscribe(modelPath)
+                if (!text.isNullOrBlank()) {
+                    sendText(text)
+                } else {
+                    _uiState.update { it.copy(isLoading = false, error = "语音识别失败") }
+                }
             } catch (e: Exception) {
                 _uiState.update { it.copy(
                     isLoading = false,
