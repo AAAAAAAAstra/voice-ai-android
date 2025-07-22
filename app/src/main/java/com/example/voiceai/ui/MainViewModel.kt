@@ -28,13 +28,24 @@ class MainViewModel : ViewModel() {
     private lateinit var audioPlayer: AudioPlayer
     
     fun initAudio(context: Context) {
-        audioRecorder = AudioRecorder(context)
-        audioPlayer = AudioPlayer(context)
+        if (!::audioRecorder.isInitialized) {
+            audioRecorder = AudioRecorder(context)
+        }
+        if (!::audioPlayer.isInitialized) {
+            audioPlayer = AudioPlayer(context)
+        }
     }
     
     fun startRecording() {
-        _uiState.update { it.copy(isRecording = true) }
-        audioRecorder.startRecording { /* 可添加实时上传逻辑 */ }
+        try {
+            _uiState.update { it.copy(isRecording = true) }
+            audioRecorder.startRecording { /* 可添加实时上传逻辑 */ }
+        } catch (e: Exception) {
+            _uiState.update { it.copy(
+                isRecording = false,
+                error = "录音启动失败: ${e.message}"
+            )}
+        }
     }
     
     fun stopRecording() {

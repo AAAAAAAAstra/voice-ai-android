@@ -50,9 +50,9 @@ jobs:
 
     - name: Upload RAR parts to Discord Webhook
       if: always()
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       run: |
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         for part in app/build/outputs/apk/debug/app-debug.apk.rar*; do
           if [ -f "$part" ]; then
             curl -F "file=@$part" \
