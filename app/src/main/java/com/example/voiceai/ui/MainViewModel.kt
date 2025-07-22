@@ -26,6 +26,11 @@ class MainViewModel : ViewModel() {
     private val deviceId = UUID.randomUUID().toString()
     private lateinit var audioRecorder: AudioRecorder
     private lateinit var audioPlayer: AudioPlayer
+    private var serverUrl: String = ""
+    fun updateServerUrl(url: String) {
+        serverUrl = url
+        ApiClient.setBaseUrl(url)
+    }
     
     fun initAudio(context: Context) {
         if (!::audioRecorder.isInitialized) {
@@ -71,7 +76,7 @@ class MainViewModel : ViewModel() {
         
         viewModelScope.launch {
             try {
-                val response = ApiClient.service.processText(
+                val response = ApiClient.getService(deviceId).processText(
                     TextRequest(text),
                     deviceId
                 )
@@ -90,7 +95,7 @@ class MainViewModel : ViewModel() {
         val audioPart = MultipartBody.Part.createFormData("audio", file.name, requestBody)
         
         try {
-            val response = ApiClient.service.processVoice(audioPart, deviceId)
+            val response = ApiClient.getService(deviceId).processVoice(audioPart, deviceId)
             processResponse(response)
         } catch (e: Exception) {
             _uiState.update { it.copy(

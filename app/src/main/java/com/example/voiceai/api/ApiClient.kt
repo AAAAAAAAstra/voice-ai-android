@@ -10,16 +10,16 @@ import java.util.concurrent.TimeUnit
 
 interface VoiceAIService {
     @Multipart
-    @POST("/process_voice")
+    @POST("process_voice")
     suspend fun processVoice(
         @Part audio: MultipartBody.Part,
-        @Header("X-Device-ID") deviceId: String
+        @Header("X-Session-ID") deviceId: String
     ): VoiceAIResponse
 
-    @POST("/process_text")
+    @POST("process_text")
     suspend fun processText(
         @Body request: TextRequest,
-        @Header("X-Device-ID") deviceId: String
+        @Header("X-Session-ID") deviceId: String
     ): VoiceAIResponse
 }
 
@@ -32,22 +32,35 @@ data class VoiceAIResponse(
 )
 
 object ApiClient {
-    private const val BASE_URL = "https://your-server.com/api/"
-    
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
-        .build()
-    
-    val service: VoiceAIService by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
+    @Volatile
+    private var baseUrl: String = "https://your-server.com/api/"
+
+    fun setBaseUrl(url: String) {
+        baseUrl = if (url.endsWith("/")) url else "$url/"
+    }
+
+    private fun getRetrofit(deviceId: String): Retrofit {
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .header("X-Session-ID", deviceId)
+                    .build()
+                chain.proceed(request)
+            }
+            .build()
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(VoiceAIService::class.java)
+    }
+
+    fun getService(deviceId: String): VoiceAIService {
+        return getRetrofit(deviceId).create(VoiceAIService::class.java)
     }
 }

@@ -52,8 +52,20 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
-    
+    var serverUrl by remember { mutableStateOf("") }
+
     Column(modifier = Modifier.padding(16.dp)) {
+        // 新增服务器URL输入框
+        OutlinedTextField(
+            value = serverUrl,
+            onValueChange = {
+                serverUrl = it
+                viewModel.updateServerUrl(it)
+            },
+            label = { Text("服务器URL") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         // 输入区域
         InputSection(
             onTextSubmit = { text -> viewModel.sendText(text) },
