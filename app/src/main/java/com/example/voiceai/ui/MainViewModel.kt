@@ -17,6 +17,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.util.UUID
+import android.content.Context
 
 class MainViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MainUiState())
@@ -74,7 +75,7 @@ class MainViewModel : ViewModel() {
     }
     
     private suspend fun uploadAudio(file: File) {
-        val requestBody = file.asRequestBody("audio/opus".toMediaTypeOrNull())
+        val requestBody = file.asRequestBody("audio/mp4".toMediaTypeOrNull())
         val audioPart = MultipartBody.Part.createFormData("audio", file.name, requestBody)
         
         try {

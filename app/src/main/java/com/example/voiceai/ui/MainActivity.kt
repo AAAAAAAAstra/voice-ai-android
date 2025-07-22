@@ -76,7 +76,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         // 状态指示器
         when {
             uiState.isLoading -> LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            uiState.error != null -> ErrorMessage(message = uiState.error)
+            uiState.error != null -> ErrorMessage(message = uiState.error ?: "未知错误")
         }
     }
 }
