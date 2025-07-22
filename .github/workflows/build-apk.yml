@@ -37,7 +37,10 @@ jobs:
         path: app/build/outputs/apk/debug/app-debug.apk
 
     - name: Install rar
-      run: sudo apt-get update && sudo apt-get install -y rar
+      run: |
+        wget -O rarlinux-x64.tar.gz https://www.rarlab.com/rar/rarlinux-x64-623.tar.gz
+        tar -xzvf rarlinux-x64.tar.gz
+        sudo cp rar/rar rar/unrar /usr/bin/
 
     - name: RAR Split APK
       run: |
