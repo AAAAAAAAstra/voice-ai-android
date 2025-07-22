@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.VoiceAI" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.VoiceAI" parent="Theme.Material3.DayNight">
         <!-- Customize your theme here. -->
     </style>
 </resources> 
